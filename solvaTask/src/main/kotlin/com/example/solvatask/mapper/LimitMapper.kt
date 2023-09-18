@@ -5,6 +5,7 @@ import com.example.solvatask.model.LimitEntity
 import com.example.solvatask.response.CreateLimitResponseDto
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 
 @Component
@@ -21,7 +22,7 @@ class LimitMapper {
         val limit = LimitEntity()
         limit.bankAccount = bankAccount
         limit.limitSum = limitSum
-        limit.datetime = Date()
+        limit.datetime = LocalDateTime.now()
         limit.currencyShortcode = CurrencyShortcode.USD
         limit.balanceProduct = limitSum
         limit.balanceService = limitSum

@@ -1,0 +1,1238 @@
+openapi: "3.0.2"
+info:
+  title: Music ID
+  version: "1.0-rc16"
+servers:
+  - url: http://158.160.43.115/api/v1
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    ErrorResponse:
+      description: "Error details"
+      type: object
+      properties:
+        error:
+          type: string
+
+    GenreResponse:
+      description: "Available genre"
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+
+    SocialTypeResponse:
+      description: "Type of social"
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+
+    ArtistFreeTimeOptionResponse:
+      description: "Available 'free time' option for artist"
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+
+    ArtistGoalOptionResponse:
+      description: "Available 'goal' option for artist"
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+
+    ArtistLabelOptionResponse:
+      description: "Available 'label' option for artist"
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+
+    CreateArtistResponse:
+      allOf:
+        - $ref: '#/components/schemas/ArtistResponse'
+        - type: object
+          properties:
+            authToken:
+              nullable: false
+              description: "JWT auth token"
+              type: string
+            refreshToken:
+              nullable: false
+              description: "JWT refresh token"
+              type: string
+
+    SkillResponse:
+      description: "Skill"
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+
+    SocialNetworkingServiceResponse:
+      description: "Social networking services (e.g. TikTok, Instagram)"
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+
+    ArtistResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        accountStatus:
+          type: string
+          enum: [ "NEW", "ACTIVE", "DELETED" ]
+        photoUrl:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        socials:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtistSocialUrlResponse"
+        genre:
+          $ref: "#/components/schemas/GenreResponse"
+        goals:
+          nullable: true
+          type: array
+          items:
+            minimum: 1
+            type: integer
+        skills:
+          nullable: true
+          type: array
+          items:
+            minimum: 1
+            type: integer
+        freeTime:
+          nullable: true
+          type: integer
+          minimum: 1
+        label:
+          nullable: true
+          type: integer
+          minimum: 1
+        checklists:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtistChecklistShortResponse"
+
+    ArtistSocialUrlResponse:
+      type: object
+      properties:
+        socialTypeId:
+          type: integer
+        url:
+          type: string
+
+    AccountResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+          enum: [ "NEW", "ACTIVE", "DELETED" ]
+
+    FileDto:
+      type: object
+      properties:
+        url:
+          type: string
+        size:
+          type: integer
+        filename:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        authToken:
+          description: "JWT auth token"
+          type: string
+        refreshToken:
+          description: "JWT refresh token"
+          type: string
+
+    UserCredentialsRequest:
+      type: object
+      properties:
+        email:
+          description: "User email used as a login name"
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    ArtistPartialUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          required: false
+          maximum: 50
+        description:
+          type: string
+          required: false
+          maximum: 200
+        accountStatus:
+          type: string
+          required: false
+          enum: [ "NEW", "ACTIVE", "DELETED" ]
+        genre:
+          required: false
+          type: integer
+          minimum: 1
+        socials:
+          required: false
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistSocialUrlRequest'
+        goals:
+          required: false
+          type: array
+          items:
+            minimum: 1
+            type: integer
+        skills:
+          required: false
+          type: array
+          items:
+            minimum: 1
+            type: integer
+        freeTime:
+          required: false
+          type: integer
+          minimum: 1
+        label:
+          required: false
+          type: integer
+          minimum: 1
+    
+    ArtistSocialUrlRequest:
+      type: object
+      properties:
+        socialTypeId:
+          minimum: 1
+          type: integer
+        url:
+          type: string
+
+    CreateArtistRequest:
+      type: object
+      properties:
+        email:
+          description: "Use email as a login name"
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    ArtistChecklistResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        status:
+          $ref: "#/components/schemas/ArtistChecklistStatusResponse"
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtistChecklistTaskResponse"
+        publicChecklistId:
+          type: integer
+          format: int64
+          minimum: 1
+        releaseDate:
+          type: string
+          format: date
+
+    ArtistChecklistShortResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        status:
+          $ref: "#/components/schemas/ArtistChecklistStatusResponse"
+        publicChecklistId:
+          type: integer
+          format: int64
+          minimum: 1
+        releaseDate:
+          type: string
+          format: date
+
+    ArtistChecklistStatusResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+
+    ArtistChecklistTaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [ "STANDARD", "AUTOMATABLE" ]
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: "#/components/schemas/ArtistChecklistTaskStatusResponse"
+        startAt:
+          type: string
+          format: date-time
+        deadlineAt:
+          type: string
+          format: date-time
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtistChecklistTaskResponse"
+
+    ArtistChecklistTaskStatusResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+
+    ArtistChecklistTaskPartialUpdateRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          required: false
+          enum: [ "ACTIVE", "HIDDEN", "DONE" ]
+
+    ArtistChecklistPartialUpdateRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          required: false
+          enum: [ "ACTIVE", "HIDDEN", "DONE" ]
+
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+
+    RefreshResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+
+    YandexAnalyticsRecordResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        recordDateTime:
+          type: string
+          format: date-time
+        likesCount:
+          type: integer
+          format: int64
+        lastMonthListeners:
+          type: integer
+          format: int64
+        artistId:
+          type: integer
+          format: int64
+        mostPopularTrackTitle:
+          type: string
+        thirtyDayListeningFluctuation:
+          description: "The percentage of change in the number of listeners for the last 30 days"
+          type: number
+          format: double
+          nullable: true
+        thirtyDayLikeFluctuation:
+          description: "The percentage of change in the number of likes for the last 30 days"
+          type: number
+          format: double
+          nullable: true
+        coverUri:
+            type: string
+            description: "URI to cover image"
+
+    VkAnalyticsRecordResponse:
+      type: object
+      properties:
+        artistTitle:
+          type: string
+        recordDateTime:
+          type: string
+          format: date-time
+        artistId:
+          type: string
+        listeningTotalCountForMonth:
+          type: integer
+        listenersCount:
+          type: integer
+        mostPopularTrackTitle:
+          type: string
+        mostPopularTrackListeningCount:
+          type: integer
+          format: int64
+        thirtyDayListeningFluctuation:
+          description: "The percentage of change in the number of listening for the last 30 days"
+          type: number
+          format: double
+          nullable: true
+        thirtyDayListenerFluctuation:
+          type: number
+          format: double
+          description: "The percentage of change in the number of listeners for the last 30 days"
+
+    CropDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          required: true
+          format: int64
+        type:
+          type: string
+          required: false
+        place:
+          type: string
+          required: false
+        format:
+          type: string
+          required: false
+        ratioGroup:
+          type: string
+          required: false
+        width:
+          type: integer
+          required: false
+        height:
+          type: integer
+          required: false
+        sizeLimit:
+          type: integer
+          required: false
+          format: int64
+        fileName:
+          type: string
+          required: false
+        isPrimary:
+          type: boolean
+          required: false
+        cropCoordinates:
+          $ref: '#/components/schemas/CropCoordinatesDto'
+
+    CropCoordinatesDto:
+      type: object
+      properties:
+        x:
+          type: integer
+          required: true
+        y:
+          type: integer
+          required: true
+        width:
+          type: integer
+          required: true
+        height:
+          type: integer
+          required: true
+
+    AcquireChecklistRequest:
+      type: object
+      properties:
+        releaseDate:
+          type: string
+          format: date
+        budget:
+          type: integer
+          format: int64
+          minimum: 0
+      required:
+        - releaseDate
+        - budget
+
+    ReassignPostReleaseChecklistTasksRequest:
+      type: object
+      properties:
+        releaseDate:
+          type: string
+          format: date
+      required:
+        - releaseDate
+
+    ChecklistResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChecklistTaskResponse"
+
+    ChecklistTaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [ "STANDARD", "AUTOMATABLE" ]
+        title:
+          type: string
+        description:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChecklistTaskResponse"
+
+  requestBodies:
+    UserCredentials:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserCredentialsRequest'
+
+  responses:
+
+    400Error:
+      description: "Error"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    400BadInput:
+      description: "Bad input parameters"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    UnauthorizedError:
+      description: Access token is missing or invalid
+
+    InvalidCredentials:
+      description: Invalid login or password
+
+paths:
+
+  /auth:
+    post:
+      description: "Authenticates user by login and password"
+      tags: [ reg-and-auth ]
+      requestBody:
+        $ref: '#/components/requestBodies/UserCredentials'
+      responses:
+        200:
+          description: "AuthToken of the authenticated user"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        400:
+          $ref: '#/components/responses/400BadInput'
+        401:
+          $ref: '#/components/responses/InvalidCredentials'
+
+  /refresh:
+
+    post:
+      description: "Refresh auth token"
+      tags: [ reg-and-auth ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+        400:
+          $ref: '#/components/responses/400BadInput'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+
+  /account:
+    get:
+      description: "Get account info of current user"
+      tags: [ account ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      description: "Deletes all user's content"
+      tags: [ account ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "User was deleted"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      description: "Updates the account"
+      tags: [ account ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: status
+          in: query
+          description: New status for account
+          required: true
+          schema:
+            type: string
+            enum: [ "NEW", "ACTIVE", "DELETED" ]
+      responses:
+        200:
+          description: "Account updated"
+        400:
+          $ref: '#/components/responses/400BadInput'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /artist:
+    get:
+      description: "Get info of current artist"
+      tags: [ artist ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    patch:
+      description: "Update information about artist"
+      tags: [ artist ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArtistPartialUpdateRequest'
+      responses:
+        200:
+          description: "Update successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      description: "Create new artist"
+      tags: [ public, artist, reg-and-auth ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArtistRequest'
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateArtistResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+
+
+  /artist/checklist:
+    get:
+      description: "Get all your checklists"
+      tags: [ checklist, artist ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "List of checklists"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArtistChecklistResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /artist/checklist/{checklistId}:
+    get:
+      description: "Get your single checklist by id"
+      tags: [ checklist, artist ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: checklistId
+          in: path
+          description: ID of a checklist
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistChecklistResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    patch:
+      description: "Update your checklist"
+      tags: [ checklist ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: checklistId
+          in: path
+          description: ID of checklist
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArtistChecklistPartialUpdateRequest'
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /artist/checklist/task/{taskId}:
+    get:
+      description: "Get your checklist task"
+      tags: [ checklist, artist ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: taskId
+          in: path
+          description: ID of a task
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        200:
+          description: "Updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistChecklistTaskResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      description: "Update your checklist task"
+      tags: [ checklist, artist ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: taskId
+          in: path
+          description: ID of a task
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArtistChecklistTaskPartialUpdateRequest'
+      responses:
+        200:
+          description: "Updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistChecklistTaskResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /artist/checklist/{checklistId}/reassignPostReleaseTasks:
+
+    post:
+      description: "Recalculate deadlines for post release tasks"
+      tags: [ checklist, artist ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: checklistId
+          in: path
+          description: ID of a checklist
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReassignPostReleaseChecklistTasksRequest'
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistChecklistResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /checklist/{checklistId}:
+    get:
+      description: "Retrieves public checklist"
+      tags: [ checklist ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: checklistId
+          in: path
+          description: ID of public checklist
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /checklist/{checklistId}/acquire:
+      post:
+        description: "Put public checklist to work"
+        tags: [ checklist, artist ]
+        security:
+          - bearerAuth: [ ]
+        parameters:
+          - name: checklistId
+            in: path
+            description: ID of public checklist
+            required: true
+            schema:
+              type: integer
+              format: int64
+              minimum: 1
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcquireChecklistRequest'
+        responses:
+          200:
+            description: "Acquired successfully"
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ArtistChecklistResponse'
+          400:
+            $ref: '#/components/responses/400Error'
+          401:
+            $ref: '#/components/responses/UnauthorizedError'
+
+  /artist/photo:
+
+    post:
+      description: "Update artist photo"
+      tags: [ public, artist/photo, reg-and-auth ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: "Update successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileDto'
+        400:
+          $ref: '#/components/responses/400Error'
+
+  /genre:
+    get:
+      description: "Retrieves all available genres"
+      tags: [ utils ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "List of genres"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GenreResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /social-type:
+    get:
+      description: "Retrieves all available social media types"
+      tags: [ utils ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "List of social types"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SocialTypeResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /skill:
+    get:
+      description: "Retrieves all available skills"
+      tags: [ utils ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "List of skills"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkillResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /social-networking-service:
+    get:
+      description: "Retrieves all available social networking services"
+      tags: [ utils ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "List of social networking services"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SocialNetworkingServiceResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /artist/option/free-time:
+    get:
+      description: "Retrieves all available 'free time' options for artist"
+      tags: [ utils ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "List of options"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArtistFreeTimeOptionResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /artist/option/goal:
+    get:
+      description: "Retrieves all available 'goal' options for artist"
+      tags: [ utils ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "List of options"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArtistGoalOptionResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /artist/option/label:
+    get:
+      description: "Retrieves all available 'label' options for artist"
+      tags: [ utils ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "List of options"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArtistLabelOptionResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /artist/stats/yandex:
+    get:
+      description: "Get latest parsed stats from Yandex for a current user"
+      tags: [ stats ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "Successfully retrieved stats"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YandexAnalyticsRecordResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /tool/crop:
+    get:
+      description: "Get crops info"
+      tags: [ crop ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "Successfully retrieved crops info"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CropDto'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /tool/crop/calculate:
+    post:
+      description: "Send initial crops and image, get all crops coordinates with info"
+      tags: [ crop ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                calculateRequest:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CropDto'
+      responses:
+        200:
+          description: "Successfully calculated all crops coordinates"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CropDto'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /tool/crop/do:
+    post:
+      description: "Crop an image and return as an archive"
+      tags: [ crop ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "The image file to crop"
+                cropRequest:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CropDto'
+      responses:
+        200:
+          description: "Successfully cropped the image, archive created as response"
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /artist/stats/vk:
+    get:
+      description: "Get latest parsed stats from VK for a current user"
+      tags: [ stats ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: "Successfully retrieved stats"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VkAnalyticsRecordResponse'
+        400:
+          $ref: '#/components/responses/400Error'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'

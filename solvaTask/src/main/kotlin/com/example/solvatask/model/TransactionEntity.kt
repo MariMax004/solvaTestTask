@@ -6,6 +6,7 @@ import jakarta.persistence.*
 import lombok.Getter
 import lombok.Setter
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 
 @Getter
@@ -35,7 +36,7 @@ class TransactionEntity {
     @Enumerated(EnumType.STRING)
     var expenseCategory: ExpenseCategory? = null
 
-    var datetime: Date? = null
+    var datetime: LocalDateTime? = null
 
     @Column(name = "limit_exceed")
     var limitExceed: Boolean? = null

@@ -3,12 +3,13 @@ package com.example.solvatask.response
 import com.example.solvatask.enums.CurrencyShortcode
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 
 class CreateLimitResponseDto(
         var limitSum: BigDecimal? = null,
 
-        var datetime: Date? = null,
+        var datetime: LocalDateTime? = null,
 
         var currencyShortcode: CurrencyShortcode? = null,
 

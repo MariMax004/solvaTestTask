@@ -9,7 +9,7 @@ create table client_limit
     limit_sum          numeric,
     balance_product    numeric,
     balance_service    numeric,
-    datetime           date,
+    datetime           timestamp,
     currency_shortcode VARCHAR(16)
 );
 
@@ -23,7 +23,7 @@ create table transaction
     currency_shortcode VARCHAR(16),
     expense_category   VARCHAR(16),
     limit_exceed       bool,
-    datetime           date
+    datetime           timestamp
 );
 
 CREATE TABLE currency_pair

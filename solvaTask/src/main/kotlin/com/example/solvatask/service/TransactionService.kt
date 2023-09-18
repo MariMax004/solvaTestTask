@@ -2,6 +2,7 @@ package com.example.solvatask.service
 
 import com.example.solvatask.enums.CurrencyShortcode
 import com.example.solvatask.enums.ExpenseCategory
+import com.example.solvatask.error.dto.InvalidData
 import com.example.solvatask.mapper.TransactionMapper
 import com.example.solvatask.model.LimitEntity
 import com.example.solvatask.repository.CurrencyPairRepository
@@ -10,10 +11,10 @@ import com.example.solvatask.repository.TransactionRepository
 import com.example.solvatask.request.CreateTransactionRequestDto
 import com.example.solvatask.response.CreateTransactionResponseDto
 import jakarta.transaction.Transactional
-import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
+import kotlin.streams.toList
 
 @Service
 class TransactionService(val transactionMapper: TransactionMapper,
@@ -21,8 +22,6 @@ class TransactionService(val transactionMapper: TransactionMapper,
                          val limitRepository: LimitRepository,
                          val limitService: LimitService,
                          val currencyPairRepository: CurrencyPairRepository) {
-
-    private val logger = KotlinLogging.logger {}
 
     fun getTransactionsExceed(bankAccount: String): List<CreateTransactionResponseDto> {
         val tuples = transactionRepository.findTransactionsWithLimitExceed(bankAccount)
@@ -49,7 +48,7 @@ class TransactionService(val transactionMapper: TransactionMapper,
                     transactionRequest.currencyShortcode)
 
             else -> {
-                print("wrong expense category")
+                throw InvalidData()
             }
         }
         val isExceed = isTransactionExceed(expenseCategory, limit)

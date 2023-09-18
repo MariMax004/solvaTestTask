@@ -1,0 +1,166 @@
+openapi: "3.0.2"
+info:
+  title: Solv Task
+  version: "1.0-rc16"
+servers:
+  - url: http://158.160.43.115/api/v1
+
+components:
+
+  schemas:
+
+    ErrorResponse:
+      description: "Error details"
+      type: object
+      properties:
+        error:
+          type: string
+
+    CreateTransactionRequestDto:
+      type: object
+      properties:
+        sum:
+          description: "Sum of transaction"
+          type: number
+          required: true
+        accountFrom:
+          type: string
+          required: true
+        accountTo:
+          type: string
+          required: true
+        currencyShortcode:
+          enum: [ "USD", "RUB", "KZT" ]
+          required: true
+        expenseCategory:
+          enum: [ "PRODUCT", "SERVICE" ]
+          required: true
+
+
+    CreateTransactionResponseDto:
+      type: object
+      properties:
+        sum:
+          description: "Sum of transaction"
+          type: number
+        accountFrom:
+          type: string
+        accountTo:
+          type: string
+        currencyShortcode:
+          enum: [ "USD", "RUB", "KZT" ]
+        expenseCategory:
+          enum: [ "PRODUCT", "SERVICE" ]
+        limitExceed:
+          type: boolean
+        limit:
+          $ref: "#/components/schemas/CreateLimitResponseDto"
+
+
+    CreateLimitRequestDto:
+      type: object
+      properties:
+        limitSum:
+          description: "Limit sum"
+          type: number
+        bankAccount:
+          type: string
+          required: true
+
+
+    CreateLimitResponseDto:
+      type: object
+      properties:
+        limitSum:
+          description: "Limit sum"
+          type: number
+          required: true
+        bankAccount:
+          type: string
+          required: true
+        datetime:
+          type: string
+          format: date
+        currencyShortcode:
+          enum: [ "USD", "RUB", "KZT" ]
+
+  responses:
+    400Error:
+      description: "Error"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  /limits/{account}:
+    get:
+      description: "Get limit bank account info"
+      tags: [ limits ]
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateLimitResponseDto'
+        404:
+          $ref: '#/components/responses/400Error'
+
+  /limits/:
+    post:
+      description: "Create new limit"
+      tags: [ limits ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLimitRequestDto'
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateLimitResponseDto'
+        400:
+          $ref: '#/components/responses/400Error'
+
+
+  /transactions/:
+    post:
+      description: "Create new transaction"
+      tags: [ transactions ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionRequestDto'
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTransactionResponseDto'
+        400:
+          $ref: '#/components/responses/400Error'
+
+  /transactions/exceeded/{bankAccount}:
+    post:
+      description: "Get exceeded transactions"
+      tags: [ transactions ]
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateTransactionResponseDto'
+        404:
+          $ref: '#/components/responses/400Error'
+

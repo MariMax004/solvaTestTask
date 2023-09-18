@@ -5,6 +5,7 @@ import jakarta.persistence.*
 import lombok.Getter
 import lombok.Setter
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 
 @Getter
@@ -29,7 +30,7 @@ class LimitEntity {
     @Column(name = "bank_account")
     var bankAccount: String? = null
 
-    var datetime: Date? = null
+    var datetime: LocalDateTime? = null
 
     @Column(name = "currency_shortcode")
     @Enumerated(EnumType.STRING)

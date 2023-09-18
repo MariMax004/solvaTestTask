@@ -9,6 +9,8 @@ import com.example.solvatask.response.CreateTransactionResponseDto
 import jakarta.persistence.Tuple
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.*
 
 @Component
@@ -24,11 +26,12 @@ class TransactionMapper {
                 datetime = transaction.datetime
         )
     }
+
     fun convertToTransaction(transactionRequest: CreateTransactionRequestDto, isExceed: Boolean): TransactionEntity {
         val transaction = TransactionEntity()
         transaction.accountTo = transactionRequest.accountTo
         transaction.accountFrom = transactionRequest.accountFrom
-        transaction.datetime = Date()
+        transaction.datetime = LocalDateTime.now()
         transaction.sum = transactionRequest.sum
         transaction.currencyShortcode = transactionRequest.currencyShortcode
         transaction.expenseCategory = transactionRequest.expenseCategory
@@ -40,7 +43,7 @@ class TransactionMapper {
         val transaction = CreateTransactionResponseDto(
                 tuple.get(1, String::class.java),
                 tuple.get(2, String::class.java),
-                tuple.get(3, Date::class.java),
+                tuple.get(3, Timestamp::class.java).toLocalDateTime(),
                 tuple.get(4) as Boolean,
                 tuple.get(5, BigDecimal::class.java),
                 CurrencyShortcode.valueOf(tuple.get(6, String::class.java) as String),
@@ -48,7 +51,7 @@ class TransactionMapper {
         )
         val limit = CreateLimitResponseDto()
         limit.limitSum = tuple.get(8, BigDecimal::class.java)
-        limit.datetime = tuple.get(9, Date::class.java)
+        limit.datetime = tuple.get(9, Timestamp::class.java).toLocalDateTime()
         limit.currencyShortcode = CurrencyShortcode.valueOf(tuple.get(10, String::class.java) as String)
         transaction.limit = limit
         return transaction

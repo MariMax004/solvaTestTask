@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
 
   flyway:
     locations: classpath:db/migration
@@ -14,6 +14,5 @@ spring:
 
 
 currency:
-  api-key: "8a77e4eece4941a399336c741bc7cbf4"
+  api-key: ${12DATA_API_KEY}
   url: "https://api.twelvedata.com/time_series"
-
