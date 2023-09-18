@@ -16,6 +16,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 
 class TransactionServiceTest {
@@ -45,7 +46,7 @@ class TransactionServiceTest {
         limitEntity1.limitSum = BigDecimal(1000)
         limitEntity1.balanceService = BigDecimal(1000)
         limitEntity1.balanceProduct = BigDecimal(1000)
-        limitEntity1.datetime = Date()
+        limitEntity1.datetime = LocalDateTime.now()
         limitEntity1.currencyShortcode = CurrencyShortcode.USD
 
         every { limitRepository.getLastLimit(accountFrom) } returns Optional.of(limitEntity1);
@@ -77,7 +78,7 @@ class TransactionServiceTest {
         limitEntity1.limitSum = BigDecimal(1000)
         limitEntity1.balanceService = BigDecimal(1000)
         limitEntity1.balanceProduct = BigDecimal(1000)
-        limitEntity1.datetime = Date()
+        limitEntity1.datetime = LocalDateTime.now()
         limitEntity1.currencyShortcode = CurrencyShortcode.USD
 
         every { limitRepository.getLastLimit(accountFrom) } returns Optional.of(limitEntity1);
