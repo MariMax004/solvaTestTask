@@ -1,15 +1,13 @@
 package com.example.solvatask.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@EnableConfigurationProperties
 @ConfigurationProperties(prefix = "currency")
-class CurrencyConfig(
+data class CurrencyConfig(
         var apiKey: String = "",
         var url: String = "",
-        var connectTimeout: Long = 30000L,
-        var readTimeout: Long = 30000L
+        val connectTimeout: Long = 0,
+        val readTimeout: Long = 0
 )

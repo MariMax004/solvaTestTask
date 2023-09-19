@@ -1,6 +1,5 @@
 CREATE TYPE currency_shortcode AS ENUM ('USD', 'KZT', 'RUB');
 CREATE TYPE expense_category AS ENUM ('PRODUCT', 'SERVICE');
-
 create sequence limit_seq;
 create table client_limit
 (

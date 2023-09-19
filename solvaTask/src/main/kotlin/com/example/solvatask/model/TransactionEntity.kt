@@ -3,14 +3,10 @@ package com.example.solvatask.model
 import com.example.solvatask.enums.CurrencyShortcode
 import com.example.solvatask.enums.ExpenseCategory
 import jakarta.persistence.*
-import lombok.Getter
-import lombok.Setter
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
 
-@Getter
-@Setter
 @Entity
 @Table(name = "transaction")
 class TransactionEntity {

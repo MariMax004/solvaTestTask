@@ -12,7 +12,6 @@ spring:
     locations: classpath:db/migration
     enabled: true
 
-
 currency:
-  api-key: ${12DATA_API_KEY}
+  api-key: "8a77e4eece4941a399336c741bc7cbf4"
   url: "https://api.twelvedata.com/time_series"
