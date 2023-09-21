@@ -1,14 +1,9 @@
 package com.example.solvatask.error.dto
 
-import java.time.LocalDateTime
-
-data class InvalidDataException(
-        val error: String,
-        val time: LocalDateTime = LocalDateTime.now()
-) : RuntimeException() {
+class InvalidDataException private constructor(message: String) : RuntimeException(message) {
     companion object {
-        fun throwWithMessage(message: String): InvalidDataException {
-            return InvalidDataException(message)
+        fun throwWithMessage(message: String): Nothing {
+            throw InvalidDataException(message)
         }
     }
 }

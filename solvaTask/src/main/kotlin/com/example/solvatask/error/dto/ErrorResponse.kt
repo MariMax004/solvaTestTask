@@ -1,3 +1,8 @@
 package com.example.solvatask.error.dto
 
-data class ErrorResponse(val error: String?)
+import java.time.LocalDateTime
+
+data class ErrorResponse(
+        val error: String?,
+        val time: LocalDateTime = LocalDateTime.now()
+)

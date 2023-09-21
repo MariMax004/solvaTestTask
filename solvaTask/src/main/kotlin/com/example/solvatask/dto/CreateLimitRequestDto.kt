@@ -1,13 +1,11 @@
 package com.example.solvatask.dto
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 
 data class CreateLimitRequestDto(
         var limitSum: BigDecimal = BigDecimal(1000),
-        @NotNull
-        @NotEmpty
+        @JsonProperty(required = true)
         var bankAccount: String
 )

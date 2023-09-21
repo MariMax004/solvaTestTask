@@ -2,6 +2,7 @@ package com.example.solvatask.controller
 
 import com.example.solvatask.dto.CreateLimitRequestDto
 import com.example.solvatask.dto.CreateLimitResponseDto
+import com.example.solvatask.error.dto.ErrorResponse
 import com.example.solvatask.error.dto.InvalidDataException
 import com.example.solvatask.service.LimitService
 import org.springframework.http.ResponseEntity
@@ -18,7 +19,7 @@ class LimitController(private val limitService: LimitService) {
 
     @PostMapping("/")
     fun createClientLimit(@RequestBody limitRequest: CreateLimitRequestDto): ResponseEntity<CreateLimitResponseDto> {
-        require(!limitRequest.bankAccount.isNullOrBlank()) {
+        require(limitRequest.bankAccount.isNotBlank()) {
             throw InvalidDataException.throwWithMessage("BankAccount mustn't be null or empty")
         }
         return ResponseEntity.ok(limitService.createClientLimit(limitRequest))

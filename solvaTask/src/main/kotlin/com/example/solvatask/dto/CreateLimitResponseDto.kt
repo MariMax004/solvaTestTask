@@ -7,12 +7,9 @@ import java.time.LocalDateTime
 import java.util.*
 
 class CreateLimitResponseDto(
-        var limitSum: BigDecimal? = null,
-
-        var datetime: LocalDateTime? = null,
-
-        var currencyShortcode: CurrencyShortcode? = null,
-
+        var limitSum: BigDecimal,
+        var datetime: LocalDateTime,
+        var currencyShortcode: CurrencyShortcode,
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        val bankAccount: String? = null
+        val bankAccount: String
 )

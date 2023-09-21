@@ -8,13 +8,13 @@ import java.time.LocalDateTime
 import java.util.*
 
 class CreateTransactionResponseDto(
-        var accountFrom: String? = null,
-        val accountTo: String? = null,
-        val datetime: LocalDateTime? = null,
-        val limitExceed: Boolean? = null,
-        var sum: BigDecimal? = null,
-        var currencyShortcode: CurrencyShortcode? = null,
-        val expenseCategory: ExpenseCategory? = null,
+        var accountFrom: String,
+        val accountTo: String,
+        val datetime: LocalDateTime,
+        val limitExceed: Boolean,
+        var sum: BigDecimal,
+        var currencyShortcode: CurrencyShortcode,
+        val expenseCategory: ExpenseCategory,
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        var limit: CreateLimitResponseDto? = null
+        var limit: CreateLimitResponseDto
 )
