@@ -1,17 +1,18 @@
 package com.example.solvatask.service
 
-import com.example.solvatask.mapper.LimitMapper
-import com.example.solvatask.entity.LimitEntity
-import com.example.solvatask.repository.LimitRepository
 import com.example.solvatask.dto.CreateLimitRequestDto
 import com.example.solvatask.dto.CreateLimitResponseDto
+import com.example.solvatask.entity.LimitEntity
+import com.example.solvatask.mapper.LimitMapper
+import com.example.solvatask.repository.LimitRepository
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 
 @Service
-class LimitService(private val limitRepository: LimitRepository, private val limitMapper: LimitMapper) {
+class LimitService(val limitRepository: LimitRepository,
+                   val limitMapper: LimitMapper) {
 
     fun getClientLimits(bankAccount: String): List<CreateLimitResponseDto> {
         val limits = limitRepository.getByBankAccount(bankAccount)

@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.8.22"
     kotlin("plugin.spring") version "1.8.22"
     kotlin("plugin.jpa") version "1.8.22"
+    kotlin("kapt") version "1.3.72"
 }
 
 group = "com.example"
@@ -32,7 +33,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.ninja-squad:springmockk:4.0.2")
     implementation("javax.validation:validation-api:2.0.1.Final")
-    implementation ("org.springframework.cloud:spring-cloud-starter-openfeign:3.1.4")
+    implementation("org.mapstruct:mapstruct-jdk8:1.3.1.Final")
+    kapt("org.mapstruct:mapstruct-processor:1.3.1.Final")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.flywaydb:flyway-gradle-plugin:9.15.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

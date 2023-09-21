@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 @Entity
 data class TransactionLimitEntity(
         @Id
-        val id: Long,
+        val id: Long? = null,
         val accountFrom: String,
         val accountTo: String,
         val datetime: LocalDateTime,

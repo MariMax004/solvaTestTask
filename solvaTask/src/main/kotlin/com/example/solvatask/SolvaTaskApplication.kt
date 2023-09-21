@@ -5,15 +5,10 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
-import org.springframework.cloud.openfeign.EnableFeignClients
-import org.springframework.cloud.openfeign.FeignAutoConfiguration
-import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.context.annotation.ComponentScan
 
-@EnableScheduling
 @SpringBootApplication
-@EnableFeignClients
 @EnableConfigurationProperties(CurrencyConfig::class)
-@ImportAutoConfiguration(FeignAutoConfiguration::class)
 class SolvaTaskApplication
 
 fun main(args: Array<String>) {

@@ -6,7 +6,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
 
-class CreateLimitResponseDto(
+data class CreateLimitResponseDto(
         var limitSum: BigDecimal,
         var datetime: LocalDateTime,
         var currencyShortcode: CurrencyShortcode,

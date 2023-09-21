@@ -2,7 +2,6 @@ package com.example.solvatask.controller
 
 import com.example.solvatask.dto.CreateLimitRequestDto
 import com.example.solvatask.dto.CreateLimitResponseDto
-import com.example.solvatask.error.dto.ErrorResponse
 import com.example.solvatask.error.dto.InvalidDataException
 import com.example.solvatask.service.LimitService
 import org.springframework.http.ResponseEntity

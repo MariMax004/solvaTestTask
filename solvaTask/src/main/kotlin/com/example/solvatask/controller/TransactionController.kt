@@ -1,8 +1,8 @@
 package com.example.solvatask.controller
 
-import com.example.solvatask.error.dto.InvalidDataException
 import com.example.solvatask.dto.CreateTransactionRequestDto
 import com.example.solvatask.dto.CreateTransactionResponseDto
+import com.example.solvatask.error.dto.InvalidDataException
 import com.example.solvatask.service.TransactionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -31,4 +31,9 @@ class TransactionController(val transactionService: TransactionService) {
             : ResponseEntity<List<CreateTransactionResponseDto>> {
         return ResponseEntity.ok(transactionService.getTransactionsExceedInUSD(bankAccount).join())
     }
+
+//    @GetMapping("/test")
+//    fun test() {
+//        return currencyService.getCurrencyCourse()
+//    }
 }
