@@ -11,5 +11,5 @@ class CreateLimitResponseDto(
         var datetime: LocalDateTime,
         var currencyShortcode: CurrencyShortcode,
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        val bankAccount: String
+        val bankAccount: String? = null
 )

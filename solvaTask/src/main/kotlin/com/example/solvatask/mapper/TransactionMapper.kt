@@ -33,6 +33,7 @@ class TransactionMapper {
                 limitExceed = isExceed
         )
     }
+
     fun convertToCreateTransactionResponseDto(transactionLimit: TransactionLimitEntity): CreateTransactionResponseDto {
         return CreateTransactionResponseDto(
                 accountFrom = transactionLimit.accountFrom,
@@ -43,9 +44,9 @@ class TransactionMapper {
                 currencyShortcode = transactionLimit.currencyShortcode,
                 expenseCategory = transactionLimit.expenseCategory,
                 limit = CreateLimitResponseDto(
-                        transactionLimit.limitSum,
-                        transactionLimit.limitDatetime,
-                        transactionLimit.limitCurrencyShortcode
+                        limitSum = transactionLimit.limitSum,
+                        datetime = transactionLimit.limitDatetime,
+                        currencyShortcode = transactionLimit.limitCurrencyShortcode
                 )
         )
     }

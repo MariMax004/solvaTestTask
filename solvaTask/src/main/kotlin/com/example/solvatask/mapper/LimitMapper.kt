@@ -9,12 +9,12 @@ import java.time.LocalDateTime
 
 @Component
 class LimitMapper {
-    fun convertToCreateLimitResponseDto(limit: LimitEntity?): CreateLimitResponseDto {
+    fun convertToCreateLimitResponseDto(limit: LimitEntity): CreateLimitResponseDto {
         return CreateLimitResponseDto(
-                datetime = limit?.datetime,
-                limitSum = limit?.limitSum,
-                currencyShortcode = limit?.currencyShortcode,
-                bankAccount = limit?.bankAccount
+                datetime = limit.datetime,
+                limitSum = limit.limitSum,
+                currencyShortcode = limit.currencyShortcode,
+                bankAccount = limit.bankAccount
         )
     }
 

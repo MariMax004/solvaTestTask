@@ -16,5 +16,5 @@ class CreateTransactionResponseDto(
         var currencyShortcode: CurrencyShortcode,
         val expenseCategory: ExpenseCategory,
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        var limit: CreateLimitResponseDto
+        var limit: CreateLimitResponseDto?=null
 )
