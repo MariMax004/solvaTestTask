@@ -10,6 +10,7 @@ import com.example.solvatask.repository.CurrencyPairRepository
 import com.example.solvatask.repository.LimitRepository
 import com.example.solvatask.repository.TransactionRepository
 import com.example.solvatask.dto.CreateTransactionRequestDto
+import com.example.solvatask.repository.TransactionLimitRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -24,11 +25,12 @@ class TransactionServiceTest {
     val limitRepository: LimitRepository = mockk();
     val transactionRepository: TransactionRepository = mockk();
     val currencyPairRepository: CurrencyPairRepository = mockk();
+    val transactionLimitRepository: TransactionLimitRepository = mockk();
     val transactionMapper = TransactionMapper()
     val limitMapper = LimitMapper()
     val limitService = LimitService(limitRepository, limitMapper)
     val transactionService = TransactionService(transactionMapper,
-            transactionRepository, limitRepository, limitService, currencyPairRepository);
+            transactionRepository, transactionLimitRepository, limitRepository, limitService, currencyPairRepository)
 
     @Test
     fun testCreateTransactionLimitExceedFalse() {
@@ -41,17 +43,28 @@ class TransactionServiceTest {
                 CurrencyShortcode.USD,
                 ExpenseCategory.SERVICE)
 
-        val limitEntity1 = LimitEntity()
-        limitEntity1.bankAccount = accountFrom
-        limitEntity1.limitSum = BigDecimal(1000)
-        limitEntity1.balanceService = BigDecimal(1000)
-        limitEntity1.balanceProduct = BigDecimal(1000)
-        limitEntity1.datetime = LocalDateTime.now()
-        limitEntity1.currencyShortcode = CurrencyShortcode.USD
+        val limitEntity1 = LimitEntity(
+                bankAccount = accountFrom,
+                limitSum = BigDecimal(1000),
+                balanceService = BigDecimal(1000),
+                balanceProduct = BigDecimal(1000),
+                datetime = LocalDateTime.now(),
+                currencyShortcode = CurrencyShortcode.USD
+        )
 
         every { limitRepository.getLastLimit(accountFrom) } returns Optional.of(limitEntity1);
-        every { limitRepository.save(any()) } returns LimitEntity()
-        every { transactionRepository.save(any()) } returns TransactionEntity()
+        every { limitRepository.save(any()) } returns limitEntity1
+        every { transactionRepository.save(any()) } returns
+                TransactionEntity(
+                        accountFrom = accountFrom,
+                        accountTo = accountTo,
+                        sum = BigDecimal(1100),
+                        currencyShortcode = CurrencyShortcode.USD,
+                        expenseCategory = ExpenseCategory.SERVICE,
+                        datetime = LocalDateTime.now(),
+                        limitExceed = false
+                )
+
 
         val result = transactionService.createTransaction(request);
 
@@ -73,17 +86,26 @@ class TransactionServiceTest {
                 CurrencyShortcode.USD,
                 ExpenseCategory.SERVICE)
 
-        val limitEntity1 = LimitEntity()
-        limitEntity1.bankAccount = accountFrom
-        limitEntity1.limitSum = BigDecimal(1000)
-        limitEntity1.balanceService = BigDecimal(1000)
-        limitEntity1.balanceProduct = BigDecimal(1000)
-        limitEntity1.datetime = LocalDateTime.now()
-        limitEntity1.currencyShortcode = CurrencyShortcode.USD
-
+        val limitEntity1 = LimitEntity(
+                bankAccount = accountFrom,
+                limitSum = BigDecimal(1000),
+                balanceService = BigDecimal(1000),
+                balanceProduct = BigDecimal(1000),
+                datetime = LocalDateTime.now(),
+                currencyShortcode = CurrencyShortcode.USD
+        )
         every { limitRepository.getLastLimit(accountFrom) } returns Optional.of(limitEntity1);
-        every { limitRepository.save(any()) } returns LimitEntity()
-        every { transactionRepository.save(any()) } returns TransactionEntity()
+        every { limitRepository.save(any()) } returns limitEntity1
+        every { transactionRepository.save(any()) } returns
+                TransactionEntity(
+                        accountFrom = accountFrom,
+                        accountTo = accountTo,
+                        sum = BigDecimal(1100),
+                        currencyShortcode = CurrencyShortcode.USD,
+                        expenseCategory = ExpenseCategory.SERVICE,
+                        datetime = LocalDateTime.now(),
+                        limitExceed = false
+                )
 
         val result = transactionService.createTransaction(request);
 
