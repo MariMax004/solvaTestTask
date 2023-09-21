@@ -31,6 +31,8 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.ninja-squad:springmockk:4.0.2")
+    implementation("javax.validation:validation-api:2.0.1.Final")
+    implementation ("org.springframework.cloud:spring-cloud-starter-openfeign:3.1.4")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.flywaydb:flyway-gradle-plugin:9.15.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

@@ -10,8 +10,8 @@ class CurrencyRestTemplateConfig(val currencyConfig: CurrencyConfig) {
     @Bean
     fun currencyRestTemplate(): RestTemplate {
         val clientHttpRequestFactory = SimpleClientHttpRequestFactory()
-        clientHttpRequestFactory.setConnectTimeout(currencyConfig.connectTimeout.toInt())
-        clientHttpRequestFactory.setReadTimeout(currencyConfig.readTimeout.toInt())
+        clientHttpRequestFactory.setConnectTimeout(currencyConfig.connectTimeout)
+        clientHttpRequestFactory.setReadTimeout(currencyConfig.readTimeout)
         return RestTemplate(clientHttpRequestFactory)
     }
 }

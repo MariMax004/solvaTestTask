@@ -13,5 +13,6 @@ spring:
     enabled: true
 
 currency:
-  api-key: "8a77e4eece4941a399336c741bc7cbf4"
+  api-key: ${API_KEY_TWELVE_DATA}
   url: "https://api.twelvedata.com/time_series"
+

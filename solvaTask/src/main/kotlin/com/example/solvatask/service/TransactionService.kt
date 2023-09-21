@@ -2,38 +2,80 @@ package com.example.solvatask.service
 
 import com.example.solvatask.enums.CurrencyShortcode
 import com.example.solvatask.enums.ExpenseCategory
-import com.example.solvatask.error.dto.InvalidData
 import com.example.solvatask.mapper.TransactionMapper
-import com.example.solvatask.model.LimitEntity
+import com.example.solvatask.entity.LimitEntity
+import com.example.solvatask.entity.TransactionLimitEntity
 import com.example.solvatask.repository.CurrencyPairRepository
 import com.example.solvatask.repository.LimitRepository
+import com.example.solvatask.repository.TransactionLimitRepository
 import com.example.solvatask.repository.TransactionRepository
-import com.example.solvatask.request.CreateTransactionRequestDto
-import com.example.solvatask.response.CreateTransactionResponseDto
+import com.example.solvatask.dto.CreateTransactionRequestDto
+import com.example.solvatask.dto.CreateTransactionResponseDto
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.math.BigDecimal.ZERO
 import java.math.RoundingMode
+import java.time.LocalDate
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import kotlin.streams.toList
 
 @Service
 class TransactionService(val transactionMapper: TransactionMapper,
                          val transactionRepository: TransactionRepository,
+                         val transactionLimitRepository: TransactionLimitRepository,
                          val limitRepository: LimitRepository,
                          val limitService: LimitService,
                          val currencyPairRepository: CurrencyPairRepository) {
 
     fun getTransactionsExceed(bankAccount: String): List<CreateTransactionResponseDto> {
-        val tuples = transactionRepository.findTransactionsWithLimitExceed(bankAccount)
-        return tuples.stream().map(transactionMapper::convertToCreateTransactionResponseDto).toList()
+        val tuples: List<TransactionLimitEntity> = transactionLimitRepository.findTransactionsLimits(bankAccount)
+        return tuples
+                .stream()
+                .map(transactionMapper::convertToCreateTransactionResponseDto).toList()
     }
+
+    fun getTransactionsExceedInUSD(bankAccount: String): CompletableFuture<List<CreateTransactionResponseDto>> {
+        val transactions = transactionLimitRepository.findTransactionsLimits(bankAccount)
+        val groupedTransactions = transactions.groupBy { it.currencyShortcode }
+
+        val executorService: ExecutorService = Executors.newFixedThreadPool(groupedTransactions.size)
+
+        val futures = groupedTransactions.map { (shortcode, transactions) ->
+            CompletableFuture.supplyAsync({
+                val transformedTransactions: List<CreateTransactionResponseDto>
+                if (shortcode != CurrencyShortcode.USD) {
+                    transformedTransactions = transactions.map { dto ->
+                        val transactionResponseDto = transactionMapper.convertToCreateTransactionResponseDto(dto)
+                        transactionResponseDto.sum = getSumInUSD(dto.sum, dto.currencyShortcode, dto.datetime.toLocalDate())
+                        transactionResponseDto.currencyShortcode = CurrencyShortcode.USD
+                        transactionResponseDto
+                    }
+                    transformedTransactions
+                } else {
+                    transformedTransactions = transactions.map { dto ->
+                        transactionMapper.convertToCreateTransactionResponseDto(dto)
+                    }
+                    transformedTransactions
+                }
+            }, executorService)
+        }
+
+        return CompletableFuture.allOf(*futures.toTypedArray())
+                .thenApply {
+                    futures.flatMap { it.join() }
+                }
+    }
+
 
     @Transactional
     fun createTransaction(transactionRequest: CreateTransactionRequestDto): CreateTransactionResponseDto {
         val sum = transactionRequest.sum
         val accountFrom = transactionRequest.accountFrom
         val expenseCategory = transactionRequest.expenseCategory
-        var limit = limitRepository.getLastLimit(accountFrom)
+        val limit = limitRepository.getLastLimit(accountFrom)
                 .orElseGet { limitService.createClientLimit(accountFrom, BigDecimal(1000)) }
 
         when (expenseCategory) {
@@ -46,13 +88,10 @@ class TransactionService(val transactionMapper: TransactionMapper,
                     limit.balanceProduct,
                     sum,
                     transactionRequest.currencyShortcode)
-
-            else -> {
-                throw InvalidData()
-            }
         }
+
         val isExceed = isTransactionExceed(expenseCategory, limit)
-        var transaction = transactionMapper.convertToTransaction(transactionRequest, isExceed)
+        val transaction = transactionMapper.convertToTransaction(transactionRequest, isExceed)
         limitRepository.save(limit)
         transactionRepository.save(transaction)
 
@@ -60,30 +99,30 @@ class TransactionService(val transactionMapper: TransactionMapper,
     }
 
     fun getBalanceAfterTransaction(
-            limitBalance: BigDecimal?,
-            transactionSum: BigDecimal?,
-            shortcode: CurrencyShortcode?): BigDecimal? {
-        var valueUsd = transactionSum
-        if (shortcode != CurrencyShortcode.USD) {
-            val currencyValue = currencyPairRepository
-                    .getLastCurrencyCoursePair(CurrencyShortcode.USD.toString(), shortcode.toString())
-                    ?.close
-
-            if (currencyValue != null && currencyValue.compareTo(BigDecimal.ZERO) != 0) {
-                valueUsd = transactionSum?.divide(currencyValue, 3, RoundingMode.HALF_UP)
-            }
+            limitBalance: BigDecimal,
+            transactionSum: BigDecimal,
+            shortcode: CurrencyShortcode): BigDecimal {
+        return if (shortcode != CurrencyShortcode.USD) {
+            val valueUsd = getSumInUSD(transactionSum, shortcode, LocalDate.now())
+            limitBalance.subtract(valueUsd)
+        } else {
+            limitBalance.subtract(transactionSum)
         }
-        return limitBalance?.subtract(valueUsd)
     }
 
+    fun getSumInUSD(sum: BigDecimal,
+                    shortcode: CurrencyShortcode,
+                    date: LocalDate): BigDecimal {
+        val currencyValue = currencyPairRepository
+                .getLastCurrencyCoursePair(CurrencyShortcode.USD.toString(), shortcode.toString(), date)
+                .close
+        return sum.divide(currencyValue, 3, RoundingMode.HALF_UP)
+    }
 
-    fun isTransactionExceed(expenseCategory: ExpenseCategory?, limit: LimitEntity): Boolean {
+    fun isTransactionExceed(expenseCategory: ExpenseCategory, limit: LimitEntity): Boolean {
         return when (expenseCategory) {
-            ExpenseCategory.SERVICE -> BigDecimal.ZERO.compareTo(limit.balanceService) > 0
-            ExpenseCategory.PRODUCT -> BigDecimal.ZERO.compareTo(limit.balanceProduct) > 0
-            else -> {
-                false
-            }
+            ExpenseCategory.SERVICE -> ZERO > limit.balanceService
+            ExpenseCategory.PRODUCT -> ZERO > limit.balanceProduct
         }
     }
 }

@@ -1,17 +1,12 @@
 package com.example.solvatask.mapper
 
-import com.example.solvatask.enums.CurrencyShortcode
-import com.example.solvatask.enums.ExpenseCategory
-import com.example.solvatask.model.TransactionEntity
-import com.example.solvatask.request.CreateTransactionRequestDto
-import com.example.solvatask.response.CreateLimitResponseDto
-import com.example.solvatask.response.CreateTransactionResponseDto
-import jakarta.persistence.Tuple
+import com.example.solvatask.entity.TransactionEntity
+import com.example.solvatask.entity.TransactionLimitEntity
+import com.example.solvatask.dto.CreateTransactionRequestDto
+import com.example.solvatask.dto.CreateLimitResponseDto
+import com.example.solvatask.dto.CreateTransactionResponseDto
 import org.springframework.stereotype.Component
-import java.math.BigDecimal
-import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.*
 
 @Component
 class TransactionMapper {
@@ -28,32 +23,30 @@ class TransactionMapper {
     }
 
     fun convertToTransaction(transactionRequest: CreateTransactionRequestDto, isExceed: Boolean): TransactionEntity {
-        val transaction = TransactionEntity()
-        transaction.accountTo = transactionRequest.accountTo
-        transaction.accountFrom = transactionRequest.accountFrom
-        transaction.datetime = LocalDateTime.now()
-        transaction.sum = transactionRequest.sum
-        transaction.currencyShortcode = transactionRequest.currencyShortcode
-        transaction.expenseCategory = transactionRequest.expenseCategory
-        transaction.limitExceed = isExceed
-        return transaction
-    }
-
-    fun convertToCreateTransactionResponseDto(tuple: Tuple): CreateTransactionResponseDto {
-        val transaction = CreateTransactionResponseDto(
-                tuple.get(1, String::class.java),
-                tuple.get(2, String::class.java),
-                tuple.get(3, Timestamp::class.java).toLocalDateTime(),
-                tuple.get(4) as Boolean,
-                tuple.get(5, BigDecimal::class.java),
-                CurrencyShortcode.valueOf(tuple.get(6, String::class.java) as String),
-                ExpenseCategory.valueOf(tuple.get(7, String::class.java) as String)
+        return TransactionEntity(
+                accountFrom = transactionRequest.accountFrom,
+                accountTo = transactionRequest.accountTo,
+                sum = transactionRequest.sum,
+                currencyShortcode = transactionRequest.currencyShortcode,
+                expenseCategory = transactionRequest.expenseCategory,
+                datetime = LocalDateTime.now(),
+                limitExceed = isExceed
         )
-        val limit = CreateLimitResponseDto()
-        limit.limitSum = tuple.get(8, BigDecimal::class.java)
-        limit.datetime = tuple.get(9, Timestamp::class.java).toLocalDateTime()
-        limit.currencyShortcode = CurrencyShortcode.valueOf(tuple.get(10, String::class.java) as String)
-        transaction.limit = limit
-        return transaction
+    }
+    fun convertToCreateTransactionResponseDto(transactionLimit: TransactionLimitEntity): CreateTransactionResponseDto {
+        return CreateTransactionResponseDto(
+                accountFrom = transactionLimit.accountFrom,
+                accountTo = transactionLimit.accountTo,
+                datetime = transactionLimit.datetime,
+                limitExceed = transactionLimit.limitExceed,
+                sum = transactionLimit.sum,
+                currencyShortcode = transactionLimit.currencyShortcode,
+                expenseCategory = transactionLimit.expenseCategory,
+                limit = CreateLimitResponseDto(
+                        transactionLimit.limitSum,
+                        transactionLimit.limitDatetime,
+                        transactionLimit.limitCurrencyShortcode
+                )
+        )
     }
 }

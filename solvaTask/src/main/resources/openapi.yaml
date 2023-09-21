@@ -164,3 +164,19 @@ paths:
         404:
           $ref: '#/components/responses/400Error'
 
+  /transactions/exceeded/usd/{bankAccount}:
+    post:
+      description: "Get exceeded transactions"
+      tags: [ transactions ]
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateTransactionResponseDto'
+        404:
+          $ref: '#/components/responses/400Error'
+

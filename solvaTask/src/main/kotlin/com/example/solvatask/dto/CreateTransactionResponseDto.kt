@@ -1,4 +1,4 @@
-package com.example.solvatask.response
+package com.example.solvatask.dto
 
 import com.example.solvatask.enums.CurrencyShortcode
 import com.example.solvatask.enums.ExpenseCategory
@@ -12,10 +12,9 @@ class CreateTransactionResponseDto(
         val accountTo: String? = null,
         val datetime: LocalDateTime? = null,
         val limitExceed: Boolean? = null,
-        val sum: BigDecimal? = null,
-        val currencyShortcode: CurrencyShortcode? = null,
-        val expenseCategory: ExpenseCategory? = null
-) {
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    var limit: CreateLimitResponseDto? = null
-}
+        var sum: BigDecimal? = null,
+        var currencyShortcode: CurrencyShortcode? = null,
+        val expenseCategory: ExpenseCategory? = null,
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        var limit: CreateLimitResponseDto? = null
+)

@@ -1,12 +1,11 @@
 package com.example.solvatask.mapper
 
 import com.example.solvatask.enums.CurrencyShortcode
-import com.example.solvatask.model.LimitEntity
-import com.example.solvatask.response.CreateLimitResponseDto
+import com.example.solvatask.entity.LimitEntity
+import com.example.solvatask.dto.CreateLimitResponseDto
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.*
 
 @Component
 class LimitMapper {
@@ -18,15 +17,14 @@ class LimitMapper {
                 bankAccount = limit?.bankAccount
         )
     }
-    fun convertToLimit(bankAccount: String?, limitSum: BigDecimal?): LimitEntity {
-        val limit = LimitEntity()
-        limit.bankAccount = bankAccount
-        limit.limitSum = limitSum
-        limit.datetime = LocalDateTime.now()
-        limit.currencyShortcode = CurrencyShortcode.USD
-        limit.balanceProduct = limitSum
-        limit.balanceService = limitSum
-        return limit;
-    }
 
+    fun convertToLimit(bankAccount: String, limitSum: BigDecimal): LimitEntity {
+        return LimitEntity(
+                limitSum = limitSum,
+                balanceProduct = limitSum,
+                balanceService = limitSum,
+                bankAccount = bankAccount,
+                datetime = LocalDateTime.now(),
+                currencyShortcode = CurrencyShortcode.USD)
+    }
 }

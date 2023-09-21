@@ -1,4 +1,4 @@
-package com.example.solvatask.response
+package com.example.solvatask.dto
 
 import com.example.solvatask.enums.CurrencyShortcode
 import com.fasterxml.jackson.annotation.JsonInclude
