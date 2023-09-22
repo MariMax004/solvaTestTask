@@ -43,25 +43,7 @@ class TransactionService(val transactionMapper: TransactionMapper,
     fun getTransactionsExceedInUSD(bankAccount: String): CompletableFuture<List<CreateTransactionResponseDto>> {
         val transactions = transactionLimitRepository.findTransactionsLimits(bankAccount)
         val groupedTransactions = transactions.groupBy { it.currencyShortcode }
-        val futures = groupedTransactions.map { (shortcode, transactions) ->
-            CompletableFuture.supplyAsync({
-                val transformedTransactions: List<CreateTransactionResponseDto>
-                if (shortcode != CurrencyShortcode.USD) {
-                    transformedTransactions = transactions.map { dto ->
-                        val transactionResponseDto = transactionMapper.convertToCreateTransactionResponseDto(dto)
-                        transactionResponseDto.sum = getSumInUSD(dto.sum, dto.currencyShortcode, dto.datetime.toLocalDate())
-                        transactionResponseDto.currencyShortcode = CurrencyShortcode.USD
-                        transactionResponseDto
-                    }
-                    transformedTransactions
-                } else {
-                    transformedTransactions = transactions.map { dto ->
-                        transactionMapper.convertToCreateTransactionResponseDto(dto)
-                    }
-                    transformedTransactions
-                }
-            }, executorService)
-        }
+        val futures = convertTransactionsToUSD(groupedTransactions)
 
         return CompletableFuture.allOf(*futures.toTypedArray())
                 .thenApply {
@@ -125,9 +107,8 @@ class TransactionService(val transactionMapper: TransactionMapper,
         }
     }
 
-    fun convertTransactionsToUSD(groupedTransactions: Map<CurrencyShortcode, List<TransactionLimitEntity>>,
-                                 executorService: ExecutorService)
-            : List<CompletableFuture<List<CreateTransactionResponseDto>>> {
+    fun convertTransactionsToUSD(groupedTransactions: Map<CurrencyShortcode, List<TransactionLimitEntity>>)
+                                 : List<CompletableFuture<List<CreateTransactionResponseDto>>> {
         return groupedTransactions.map { (shortcode, transactions) ->
             CompletableFuture.supplyAsync({
                 val transformedTransactions: List<CreateTransactionResponseDto>
