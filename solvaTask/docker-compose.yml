@@ -13,7 +13,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     depends_on:
       - db
-    env_file: example.env
+    env_file: .env
   db:
     container_name: db
     image: postgres:15.2
