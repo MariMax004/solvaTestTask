@@ -1,32 +1,32 @@
 package com.example.solvatask.service
 
-import com.example.solvatask.config.CurrencyConfig
+import com.example.solvatask.config.integration.CurrencyFeignClient
 import com.example.solvatask.enums.CurrencyShortcode
 import com.example.solvatask.mapper.CurrencyMapper
-import com.example.solvatask.entity.CurrencyPairEntity
 import com.example.solvatask.repository.CurrencyPairRepository
 import com.example.solvatask.response.CurrencyCourseModel
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
+import java.time.LocalDate
 
 @Service
-class CurrencyCourseService(val currencyConfig: CurrencyConfig,
-                            val currencyPairRepository: CurrencyPairRepository,
+class CurrencyCourseService(val currencyPairRepository: CurrencyPairRepository,
                             val currencyMapper: CurrencyMapper,
-                            val currencyRestTemplate: RestTemplate) {
-    fun getCurrencyCourse(from: CurrencyShortcode, to: CurrencyShortcode): CurrencyCourseModel? {
-        val urlFromTo = "${currencyConfig.url}?symbol=${from}/${to}:Huobi,&interval=1h&apikey=${currencyConfig.apiKey}"
-        return currencyRestTemplate.getForEntity(urlFromTo, CurrencyCourseModel::class.java).body
+                            val currencyFeignClient: CurrencyFeignClient) {
+    fun getCurrencyCourse(from: CurrencyShortcode, to: CurrencyShortcode): CurrencyCourseModel {
+        return currencyFeignClient.getCurrencyCourse(from, to)
     }
 
     fun saveCurrencyCourse(model: CurrencyCourseModel) {
         val currencyPair = currencyMapper.convertToCurrencyPair(model)
-        currencyPair.id = generateCurrencyPairId(currencyPair)
+        currencyPair.id = generateCurrencyPairId(currencyPair.shortcodeFrom,
+                currencyPair.shortcodeTo, currencyPair.date)
         currencyPairRepository.save(currencyPair)
     }
 
-    fun generateCurrencyPairId(currencyPair: CurrencyPairEntity): String {
-        return "${currencyPair.date}${currencyPair.shortcodeFrom}-${currencyPair.shortcodeTo}"
+    fun generateCurrencyPairId(from: CurrencyShortcode,
+                               to: CurrencyShortcode,
+                               date: LocalDate): String {
+        return "${date}${from}-${to}"
     }
 
 

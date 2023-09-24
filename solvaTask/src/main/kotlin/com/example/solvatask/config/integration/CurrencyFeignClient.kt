@@ -1,12 +1,15 @@
 package com.example.solvatask.config.integration
 
+import com.example.solvatask.enums.CurrencyShortcode
 import com.example.solvatask.response.CurrencyCourseModel
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 
-@FeignClient(name = "currency-service", url = "https://api.twelvedata.com/time_series")
+@FeignClient(name = "currency-feign-client", url = "\${currency.url}")
 interface CurrencyFeignClient {
 
-    @GetMapping("?symbol=USD/KZT:Huobi,&interval=1h&apikey=8a77e4eece4941a399336c741bc7cbf4")
-    fun getCurrencyCourse(): CurrencyCourseModel
+    @GetMapping("?symbol={from}/{to}:Huobi,&interval=1h&apikey=\${currency.api-key}")
+    fun getCurrencyCourse(@PathVariable from: CurrencyShortcode,
+                          @PathVariable to: CurrencyShortcode): CurrencyCourseModel
 }

@@ -1,5 +1,6 @@
 package com.example.solvatask.controller
 
+import com.example.solvatask.config.integration.CurrencyFeignClient
 import com.example.solvatask.dto.CreateTransactionRequestDto
 import com.example.solvatask.dto.CreateTransactionResponseDto
 import com.example.solvatask.error.dto.InvalidDataException
@@ -9,7 +10,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/transactions")
-class TransactionController(val transactionService: TransactionService) {
+class TransactionController(val transactionService: TransactionService,
+                            val currencyFeignClient: CurrencyFeignClient) {
 
     @PostMapping("/")
     fun createTransaction(@RequestBody transactionRequest: CreateTransactionRequestDto)
@@ -29,11 +31,6 @@ class TransactionController(val transactionService: TransactionService) {
     @GetMapping("/exceeded/usd/{bankAccount}")
     fun getTransactionsAsync(@PathVariable bankAccount: String)
             : ResponseEntity<List<CreateTransactionResponseDto>> {
-        return ResponseEntity.ok(transactionService.getTransactionsExceedInUSD(bankAccount).join())
+        return ResponseEntity.ok(transactionService.getTransactionsExceedInUSD(bankAccount))
     }
-
-//    @GetMapping("/test")
-//    fun test() {
-//        return currencyService.getCurrencyCourse()
-//    }
 }

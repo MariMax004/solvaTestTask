@@ -1,9 +1,9 @@
 package com.example.solvatask.entity
 
 import com.example.solvatask.enums.CurrencyShortcode
-import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.LocalDate
+import javax.persistence.*
 
 @Entity
 @Table(name = "currency_pair")

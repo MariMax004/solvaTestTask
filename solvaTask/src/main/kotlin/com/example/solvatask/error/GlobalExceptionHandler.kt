@@ -2,11 +2,11 @@ package com.example.solvatask.error;
 
 import com.example.solvatask.error.dto.ErrorResponse
 import com.example.solvatask.error.dto.InvalidDataException
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import javax.persistence.EntityNotFoundException
 
 
 @RestControllerAdvice

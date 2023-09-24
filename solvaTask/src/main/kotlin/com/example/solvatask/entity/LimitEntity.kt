@@ -1,7 +1,7 @@
 package com.example.solvatask.entity
 
 import com.example.solvatask.enums.CurrencyShortcode
-import jakarta.persistence.*
+import javax.persistence.*
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*

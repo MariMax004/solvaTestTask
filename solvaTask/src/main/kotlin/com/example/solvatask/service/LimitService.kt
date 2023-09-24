@@ -5,10 +5,10 @@ import com.example.solvatask.dto.CreateLimitResponseDto
 import com.example.solvatask.entity.LimitEntity
 import com.example.solvatask.mapper.LimitMapper
 import com.example.solvatask.repository.LimitRepository
-import jakarta.persistence.EntityNotFoundException
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import javax.persistence.EntityNotFoundException
+import javax.transaction.Transactional
 
 @Service
 class LimitService(val limitRepository: LimitRepository,

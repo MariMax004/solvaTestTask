@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component
 @Component
 class CurrencyMapper {
     fun convertToCurrencyPair(model: CurrencyCourseModel): CurrencyPairEntity {
-        val shortcodePairParsed = parseCurrencyPair(model.pair.meta.symbol)
+        val shortcodePairParsed = parseCurrencyPair(model.meta.symbol)
         return CurrencyPairEntity(
                 shortcodeFrom = shortcodePairParsed.first,
                 shortcodeTo = shortcodePairParsed.second,
-                date = model.pair.values[0].datetime,
-                close = model.pair.values[0].close
+                date = model.values[0].datetime.toLocalDate(),
+                close = model.values[0].close
         )
     }
 

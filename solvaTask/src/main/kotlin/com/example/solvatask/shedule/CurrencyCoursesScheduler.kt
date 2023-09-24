@@ -1,9 +1,9 @@
 package com.example.solvatask.shedule
 
 import com.example.solvatask.service.CurrencyCourseService
-import jakarta.annotation.PostConstruct
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import javax.annotation.PostConstruct
 
 @Component
 class CurrencyCoursesScheduler(val currencyCourseService: CurrencyCourseService) {
